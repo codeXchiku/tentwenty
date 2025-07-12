@@ -24,7 +24,7 @@ function getMonday(date) {
 }
 
 
-const getWeekData = async (req, res) => {
+const currentWeekData = async (req, res) => {
     try {
         const today = new Date();
         const monday = getMonday(today);
@@ -49,21 +49,49 @@ const monthlyData = async (req, res) => {
             { $match: { userId: req.userID } },
             {
                 $group: {
-                    _id: { week: { $week: "$date" } },
-                    totalHours: { $sum: "$hours" },
-                    projects: { $push: "$project" }
-                }
-            }
+    _id: { week: { $isoWeek: "$date" } }, // Use ISO week
+    totalHours: { $sum: "$hours" },
+    projects: { $addToSet: "$project" }
+  }
+            },
+            { $sort: { "_id.week": 1 } }
         ]);
-        return res.status(200).json(monthlyData);
+        res.status(200).json(monthlyData);
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ message: "Server error" });
     }
-}
+};
+
+const getWeekData = async (req, res) => {
+    try {
+        const { week, year } = req.query;
+
+        const startOfWeek = new Date(`${year}-01-01`);
+        startOfWeek.setDate(1 + (week - 1) * 7 - startOfWeek.getDay() + 1);
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6); 
+
+        // 2. Fetch entries for that week
+        const entries = await Work.find({
+            userId: req.userID,
+            date: { $gte: startOfWeek, $lte: endOfWeek }
+        });
+
+        if (!entries?.length) {
+            return res.status(404).json({ message: `No entries found for week ${week}, ${year}.` });
+        }
+
+        return res.status(200).json(entries);
+    } catch (error) {
+        return res.status(500).json({ message: "Server error" });
+    }
+};
 
 
 
 
 
 
-export { workEntry, getWeekData,monthlyData }
+
+
+export { workEntry, getWeekData, monthlyData,currentWeekData }
