@@ -1,12 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../store/Auth';
-import { useNavigate } from 'react-router-dom';
 
-const SpecificWeekData = ({ week, year = 2025, onClose }) => {
+type WorkItem = {
+  date: string;
+  project: string;
+  type: string;
+  hours: number;
+  description: string;
+};
+
+type Props = {
+  week: number;
+  year?: number; 
+};
+
+const SpecificWeekData = ({ week, year=2025 }:Props) => {
   const { authorizationToken } = useAuth();
-  const [groupedData, setGroupedData] = useState({});
-  const navigate = useNavigate();
+  const [groupedData, setGroupedData] = useState<{ [key: string]: WorkItem[] }>({});
+
+  console.log(week);
+  console.log(year);
+  
+  
 
   const getWeekData = async () => {
     try {
@@ -17,8 +33,8 @@ const SpecificWeekData = ({ week, year = 2025, onClose }) => {
       });
 
       // Group by formatted date
-      const grouped = {};
-      res.data.forEach((item) => {
+      const grouped:{ [key: string]: WorkItem[] } = {};
+      res.data.forEach((item:WorkItem) => {
         const dateKey = formatDate(item.date);
         if (!grouped[dateKey]) {
           grouped[dateKey] = [];

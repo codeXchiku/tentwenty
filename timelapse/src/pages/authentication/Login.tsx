@@ -1,6 +1,6 @@
-import React, { useState, type ChangeEvent, type FormEvent } from 'react';
+import React, { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import axios from 'axios';
-import { replace, useNavigate } from "react-router-dom";
+import {useNavigate } from "react-router-dom";
 import { useAuth } from "../../store/Auth"
 
 interface loginform{
@@ -41,6 +41,13 @@ const Login = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/monthview", { replace: true });
+    }
+  }, []);
 
   return (
     <div className="flex min-h-screen">

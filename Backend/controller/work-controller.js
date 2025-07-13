@@ -66,12 +66,18 @@ const getWeekData = async (req, res) => {
     try {
         const { week, year } = req.query;
 
-        const startOfWeek = new Date(`${year}-01-01`);
-        startOfWeek.setDate(1 + (week - 1) * 7 - startOfWeek.getDay() + 1);
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 6); 
+        // 1. Calculate the first day of the requested week
+        const janFirst = new Date(`${year}-01-01`);
+        const startOfYearWeek = getMonday(janFirst); // First Monday of the year
+        const startOfWeek = new Date(startOfYearWeek);
+        startOfWeek.setDate(startOfYearWeek.getDate() + (week - 1) * 7);
 
-        // 2. Fetch entries for that week
+        // 2. Calculate end of week (Sunday)
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999); // Include entire last day
+
+        // 3. Fetch entries
         const entries = await Work.find({
             userId: req.userID,
             date: { $gte: startOfWeek, $lte: endOfWeek }

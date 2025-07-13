@@ -29,7 +29,7 @@ const MonthlyData = () => {
     }
   };
 
-  const handleViewWeek = (weekNumber:number) => {
+  const handleViewWeek = (weekNumber: number) => {
     setSelectedWeek(weekNumber);
     setShowWeekPopup(true);
   };
@@ -39,7 +39,7 @@ const MonthlyData = () => {
     setSelectedWeek(null);
   };
 
-  const getWorkStatus = (hours:number) => {
+  const getWorkStatus = (hours: number) => {
     if (hours === 40) return { text: 'Completed', color: 'bg-green-100 text-green-800' };
     if (hours > 40) return { text: 'Overtime', color: 'bg-green-100 text-green-800' };
     if (hours < 40 && hours > 0) return { text: 'InCompleted', color: 'bg-yellow-100 text-yellow-800' };
@@ -97,18 +97,19 @@ const MonthlyData = () => {
         </div>
       </div>
 
-      {/* Week Data Popup */}
+
       {showWeekPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
+            <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center z-10">
               <h3 className="text-xl font-semibold">Week {selectedWeek} Details</h3>
               <button
                 onClick={handleCloseWeekPopup}
-                className="text-gray-500 hover:text-gray-700 text-2xl"
+                className="text-white bg-red-500 hover:bg-red-600 text-2xl px-3 py-1 rounded"
               >
-                &times;
+                X
               </button>
+
             </div>
             <div className="p-4">
               <SpecificWeekData
