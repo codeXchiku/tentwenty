@@ -13,7 +13,7 @@ const workSchema = new Schema({
     type: {
         type: String,
         required: true
-    },      // e.g., "Development", "Meeting"
+    },      
     description: {
         type: String,
         required: true
@@ -25,7 +25,7 @@ const workSchema = new Schema({
     date: {
         type: Date,
         default: Date.now
-    },     // Auto-set to today
+    },     
     createdAt: {
         type: Date,
         default: Date.now

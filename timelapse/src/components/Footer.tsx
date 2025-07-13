@@ -1,9 +1,11 @@
-import React from 'react'
+import React from 'react';
 
 const Footer = () => {
   return (
-    <div>Footer</div>
-  )
-}
+    <footer className="py-4 bg-gray-100 text-center text-gray-600 text-sm">
+      ©2024 tentwenty. All rights reserved.
+    </footer>
+  );
+};
 
-export default Footer
+export default Footer;
