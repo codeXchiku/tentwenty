@@ -27,13 +27,16 @@ function getMonday(date) {
 const currentWeekData = async (req, res) => {
     try {
         const today = new Date();
+        today.setHours(23, 59, 59, 999);
+
         const monday = getMonday(today);
+        monday.setHours(0, 0, 0, 0);
 
         const entries = await Work.find({
             userId: req.userID,
             date: { $gte: monday, $lte: today }
         });
-        // console.log("entries found:", entries);
+
         if (!entries || entries.length === 0) {
             return res.status(404).json({ message: "No entries found for this week." });
         }
@@ -43,16 +46,17 @@ const currentWeekData = async (req, res) => {
     }
 };
 
+
 const monthlyData = async (req, res) => {
     try {
         const monthlyData = await Work.aggregate([
             { $match: { userId: req.userID } },
             {
                 $group: {
-    _id: { week: { $isoWeek: "$date" } }, // Use ISO week
-    totalHours: { $sum: "$hours" },
-    projects: { $addToSet: "$project" }
-  }
+                    _id: { week: { $isoWeek: "$date" } }, // Use ISO week
+                    totalHours: { $sum: "$hours" },
+                    projects: { $addToSet: "$project" }
+                }
             },
             { $sort: { "_id.week": 1 } }
         ]);
@@ -66,18 +70,17 @@ const getWeekData = async (req, res) => {
     try {
         const { week, year } = req.query;
 
-        // 1. Calculate the first day of the requested week
+
         const janFirst = new Date(`${year}-01-01`);
-        const startOfYearWeek = getMonday(janFirst); // First Monday of the year
+        const startOfYearWeek = getMonday(janFirst);
         const startOfWeek = new Date(startOfYearWeek);
         startOfWeek.setDate(startOfYearWeek.getDate() + (week - 1) * 7);
 
-        // 2. Calculate end of week (Sunday)
+
         const endOfWeek = new Date(startOfWeek);
         endOfWeek.setDate(startOfWeek.getDate() + 6);
-        endOfWeek.setHours(23, 59, 59, 999); // Include entire last day
+        endOfWeek.setHours(23, 59, 59, 999);
 
-        // 3. Fetch entries
         const entries = await Work.find({
             userId: req.userID,
             date: { $gte: startOfWeek, $lte: endOfWeek }
@@ -100,4 +103,4 @@ const getWeekData = async (req, res) => {
 
 
 
-export { workEntry, getWeekData, monthlyData,currentWeekData }
+export { workEntry, getWeekData, monthlyData, currentWeekData }
